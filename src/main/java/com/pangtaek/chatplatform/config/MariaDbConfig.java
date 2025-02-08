@@ -17,16 +17,16 @@ import jakarta.persistence.EntityManagerFactory;
 @EnableTransactionManagement // 트랜잭션 처리를 허용하게 하는 어노테이션
 public class MariaDbConfig {
 
-    @Value("${spring.database.url}")
+    @Value("${spring.datasource.url}")
     private String url;
 
-    @Value("${spring.database.username}")
+    @Value("${spring.datasource.username}")
     private String username;
 
-    @Value("${spring.database.password}")
+    @Value("${spring.datasource.password}")
     private String password;
 
-    @Value("${spring.database.driverClassName}")
+    @Value("${spring.datasource.driver-class-name}")
     private String driverClassName;
 
     @Bean
@@ -48,9 +48,9 @@ public class MariaDbConfig {
     }
 
     @Bean(name = "createChatTransactionManager")
-    public PlatformTransactionManager createChatTransactionManager(EntityManagerFactory entityManaygerFactory) {
+    public PlatformTransactionManager createChatTransactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManaygerFactory);
+        transactionManager.setEntityManagerFactory(entityManagerFactory);
 
         return transactionManager;
     }
