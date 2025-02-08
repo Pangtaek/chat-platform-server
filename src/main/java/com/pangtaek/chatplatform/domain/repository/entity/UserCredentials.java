@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // 버그 예방
 @Entity
-@Table(name = "user")
+@Table(name = "user_credentials")
 public class UserCredentials {
 
     @Id
