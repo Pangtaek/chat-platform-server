@@ -9,11 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pangtaek.chatplatform.common.exception.CustomException;
 import com.pangtaek.chatplatform.common.exception.ErrorCode;
 import com.pangtaek.chatplatform.domain.auth.model.request.CreateUserRequest;
+import com.pangtaek.chatplatform.domain.auth.model.request.LoginRequest;
 import com.pangtaek.chatplatform.domain.auth.model.response.CreateUserResponse;
+import com.pangtaek.chatplatform.domain.auth.model.response.LoginResponse;
 import com.pangtaek.chatplatform.domain.repository.UserRespository;
 import com.pangtaek.chatplatform.domain.repository.entity.User;
 import com.pangtaek.chatplatform.domain.repository.entity.UserCredentials;
 import com.pangtaek.chatplatform.security.Hasher;
+import com.pangtaek.chatplatform.security.JWTProvider;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +33,7 @@ public class AuthService {
     public CreateUserResponse createUser(CreateUserRequest request) {
         Optional<User> user = userRespository.findByName(request.name());
 
-        if (user.isPresent()) {
+        if (!user.isPresent()) {
             log.error("USER_ALREADY_EXISTS: {}", request.name());
             throw new CustomException(ErrorCode.SUCCESS);
         }
@@ -69,5 +72,34 @@ public class AuthService {
                 .build();
 
         return cre;
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        Optional<User> user = userRespository.findByName(request.name());
+
+        if (!user.isPresent()) {
+            log.error("NOT_EXIST_USER: {}", request.name());
+            throw new CustomException(ErrorCode.NOT_EXIST_USER);
+        }
+
+        user.map(u -> {
+            String hashedValue = hasher.getHashingValue(request.password());
+
+            if (!u.getUserCredentials().getHashed_password().equals(hashedValue)) {
+                throw new CustomException(ErrorCode.MISS_MATCH_PASSWORD);
+            }
+
+            return hashedValue;
+        }).orElseThrow(() -> {
+            throw new CustomException(ErrorCode.MISS_MATCH_PASSWORD);
+        });
+
+        String token = JWTProvider.createToken(request.name());
+
+        return new LoginResponse(ErrorCode.SUCCESS, token);
+    }
+    
+    public String getUserFromToken(String token) {
+        return JWTProvider.getUserFromToken(token);
     }
 }
