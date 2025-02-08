@@ -4,6 +4,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -62,7 +63,8 @@ public class JWTProvider {
                 .withSubject(name)
                 .withIssuedAt(new Date())
                 .withExpiresAt(
-                        new Date(System.currentTimeMillis() + refreshTokenTimeForMinute * Constants.ON_MINUTE_TO_MILLIS))
+                        new Date(
+                                System.currentTimeMillis() + refreshTokenTimeForMinute * Constants.ON_MINUTE_TO_MILLIS))
                 .sign(Algorithm.HMAC256(refreshSecretKey));
     }
 
@@ -104,5 +106,13 @@ public class JWTProvider {
         DecodedJWT jwt = decodedJWT(token);
 
         return jwt.getSubject();
+    }
+
+    public static String extractToken(String header) {
+        if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        } else {
+            throw new IllegalArgumentException("Invalid Auth Header");
+        }
     }
 }

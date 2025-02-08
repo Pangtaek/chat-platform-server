@@ -6,9 +6,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import jakarta.persistence.EntityManagerFactory;
 
 @Configuration // application.yaml 파일의 값 참조를 허용하는 어노테이션
 @EnableTransactionManagement // 트랜잭션 처리를 허용하게 하는 어노테이션
@@ -42,5 +45,13 @@ public class MariaDbConfig {
         // manager 객체 커스텀
 
         return manager;
+    }
+
+    @Bean(name = "createChatTransactionManager")
+    public PlatformTransactionManager createChatTransactionManager(EntityManagerFactory entityManaygerFactory) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManaygerFactory);
+
+        return transactionManager;
     }
 }
