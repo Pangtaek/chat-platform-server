@@ -13,7 +13,7 @@ public interface UserRespository extends JpaRepository<User, Long> {
 
     Optional<User> findByName(String name);
 
-    boolean exexistsByName(String name);
+    boolean existsByName(String name);
 
     @Query("SELECT u.name " +
             "FROM User AS u " +
