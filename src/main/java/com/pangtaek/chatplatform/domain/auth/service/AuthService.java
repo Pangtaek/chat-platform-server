@@ -33,9 +33,9 @@ public class AuthService {
     public CreateUserResponse createUser(CreateUserRequest request) {
         Optional<User> user = userRespository.findByName(request.name());
 
-        if (!user.isPresent()) {
+        if (user.isPresent()) {
             log.error("USER_ALREADY_EXISTS: {}", request.name());
-            throw new CustomException(ErrorCode.SUCCESS);
+            throw new CustomException(ErrorCode.USER_ALREADY_EXISTS);
         }
 
         try {
@@ -98,7 +98,7 @@ public class AuthService {
 
         return new LoginResponse(ErrorCode.SUCCESS, token);
     }
-    
+
     public String getUserFromToken(String token) {
         return JWTProvider.getUserFromToken(token);
     }
