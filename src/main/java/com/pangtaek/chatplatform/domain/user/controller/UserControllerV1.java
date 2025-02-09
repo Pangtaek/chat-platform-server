@@ -1,5 +1,6 @@
 package com.pangtaek.chatplatform.domain.user.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import com.pangtaek.chatplatform.domain.user.model.response.UserSearchResponse;
 import com.pangtaek.chatplatform.domain.user.service.UserServiceV1;
 import com.pangtaek.chatplatform.security.JWTProvider;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +22,8 @@ public class UserControllerV1 {
 
     private final UserServiceV1 userService;
 
+    @Operation(summary = "User name list search", description = "User name을 기반으로 LIKE 검색 실행")
+    @GetMapping("/search/{name}")
     public UserSearchResponse searchUser(
             @PathVariable("name") String name,
             @RequestHeader("Authorization") String authString) {
