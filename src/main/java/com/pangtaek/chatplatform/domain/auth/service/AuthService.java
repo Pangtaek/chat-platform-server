@@ -32,6 +32,7 @@ public class AuthService {
     @Transactional(transactionManager = "createUserTransactionManager")
     public CreateUserResponse createUser(CreateUserRequest request) {
         Optional<User> user = userRespository.findByName(request.name());
+        User savedUser;
 
         if (user.isPresent()) {
             log.error("USER_ALREADY_EXISTS: {}", request.name());
@@ -43,16 +44,13 @@ public class AuthService {
             UserCredentials newCredentials = this.newUserCredentials(request.password(), newUser);
             newUser.setCredentials(newCredentials);
 
-            User savedUser = userRespository.save(newUser);
+            savedUser = userRespository.save(newUser);
 
-            if (savedUser == null) {
-                throw new CustomException(ErrorCode.USER_SAVED_FAILED);
-            }
         } catch (Exception e) {
             throw new CustomException(ErrorCode.USER_SAVED_FAILED);
         }
 
-        return new CreateUserResponse(request.name());
+        return new CreateUserResponse(savedUser.getName());
     }
 
     private User newUser(String name) {
