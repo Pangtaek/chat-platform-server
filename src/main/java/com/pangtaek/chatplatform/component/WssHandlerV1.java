@@ -1,5 +1,6 @@
 package com.pangtaek.chatplatform.component;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -17,7 +18,7 @@ public class WssHandlerV1 extends TextWebSocketHandler{
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage msg) {
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage msg) {
         try {
             String payload = msg.getPayload();
             Message message = objectMapper.readValue(payload, Message.class);
